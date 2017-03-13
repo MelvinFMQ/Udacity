@@ -16,10 +16,10 @@
 #   1 = Occupied space
 
 grid = [[0, 0, 1, 0, 0, 0],
-        [0, 0, 1, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 1, 0],
         [0, 0, 1, 1, 1, 0],
-        [0, 0, 0, 0, 1, 0]]
+        [0, 0, 1, 0, 1, 0]]
 init = [0, 0]
 goal = [len(grid)-1, len(grid[0])-1]
 cost = 1
@@ -35,41 +35,38 @@ def search(grid,init,goal,cost):
     # ----------------------------------------
     # insert code here
     # ----------------------------------------
-    open_a = [[0, init[0], init[1]]]
-    flags = [False]
+    open_a = [init]
+    flags = [False] #close flags for open elements
+    g_values = [[-1 for i in range(len(grid[0]))] for i in range(len(grid))]
+    g_values[init[0]][init[1]] = 0
     max_x = len(grid) - 1
     max_y = len(grid[0]) - 1
-    while False in flags:
+    while False in flags: #while there are open elements that have not been closed.
         min_g_index = 0
         while flags[min_g_index] == True:
             min_g_index += 1
         #expansion
-        gvalue, x, y = open_a[min_g_index]
+        x, y = open_a[min_g_index]
+        new_g_value = g_values[x][y]
         for deltax, deltay in delta:
-            deltax = deltax + x
-            deltay = deltay + y
-            if deltax > max_x or deltax < 0 or deltay > max_y or deltay < 0 or grid[deltax][deltay] == 1:
+            tmp_x = deltax + x
+            tmp_y = deltay + y
+            if tmp_x > max_x or tmp_x < 0 or tmp_y > max_y or tmp_y < 0 or grid[tmp_x][tmp_y] == 1:
                 #if x or y is to small or big or is a wall
                 pass
                 #print('x', deltax , 'y', deltay)
             else:
-                found = False
-                tmp = [gvalue + cost, deltax , deltay]
-                for index in range(len(open_a)):
-                    old_g_value, tmpx , tmpy = open_a[index]
-                    if tmpx == deltax and tmpy == deltay:
-                        if old_g_value > gvalue + 1: #old one is more than new one, replace
-                            open_a[index] = tmp
-                        found = True
-                        print('Found', 'x', deltax , 'y', deltay)
-                #else not found, append
-                if not found: 
-                    open_a.append(tmp)
+                old_g_value = g_values[tmp_x][tmp_y]
+                if old_g_value == -1: #first g_value
+                    g_values[tmp_x][tmp_y] = new_g_value + cost
+                    open_a.append([tmp_x,tmp_y])
                     flags.append(False)
-                    print('Not found','x', deltax , 'y', deltay)
+                elif old_g_value > new_g_value + cost: #if new g_value is lower, replace 
+                    g_values[tmp_x][tmp_y] = new_g_value + cost
                 #if its the goal, end.
-                if [deltax,deltay] == goal:
-                    return tmp
+                if [tmp_x,tmp_y] == goal:
+                    print(g_values)
+                    return [g_values[tmp_x][tmp_y], tmp_x, tmp_y]
         flags[min_g_index] = True
     return 'fail'
 
