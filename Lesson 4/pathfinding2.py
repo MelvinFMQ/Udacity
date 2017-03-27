@@ -67,6 +67,7 @@ def search(grid,init,goal,cost):
                 if [tmp_x,tmp_y] == goal:
                     print(g_values)
                     return [g_values[tmp_x][tmp_y], tmp_x, tmp_y]
+        #flaging node is no open.
         flags[min_g_index] = True
     return 'fail'
 
